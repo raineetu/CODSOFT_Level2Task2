@@ -14,7 +14,7 @@ function MainSection() {
         }}
       />
 
-      {/* Navbar */} */}
+      {/* Navbar */} 
        <div className="relative z-20 w-full">
         <Navbar />
       </div>
