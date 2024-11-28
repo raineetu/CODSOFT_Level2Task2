@@ -33,9 +33,6 @@ export const signup = async (req, res) => {
 
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
-
-   
-
     // Create a new user
     await User.create({
       fullname,
@@ -113,14 +110,12 @@ export const login = async (req, res) => {
       role: user.role,
     };
 
-    return res
-      .status(200)
-      .cookie("token", token, { maxAge: 1 * 24 * 60 * 60 * 1000, httpOnly: true })
-      .json({
-        message: `Welcome back ${user.fullname}`,
-        user: userData,
-        success: true,
-      });
+    return res.status(200).json({
+      message: `Welcome back ${user.fullname}`,
+      token, // Include the token in the response
+      user: userData,
+      success: true,
+    });
   } catch (error) {
     res.status(500).json({
       message: "Something went wrong",
@@ -129,6 +124,7 @@ export const login = async (req, res) => {
     });
   }
 };
+
 
 export const logout = async (req, res) => {
   res.clearCookie("token"); 
@@ -140,8 +136,18 @@ export const logout = async (req, res) => {
 
 export const updateProfile = async (req, res) => {
   try {
-    const { fullname, email, phoneNumber, password, bio, skills } = req.body;
-    const profilePhoto = req.file?.path; // New uploaded profile photo
+    // Extract user ID from the authenticated request (set by middleware)
+    const userId = req.user?.userId; // req.user is added by authenticate middleware
+
+    if (!userId) {
+      return res.status(401).json({
+        message: "Unauthorized access. Please log in.",
+        success: false,
+      });
+    }
+
+    const { fullname, email, phoneNumber, bio, skills } = req.body;
+    const profilePhoto = req.file?.path;
 
     // Validate inputs
     if (!fullname || !email || !phoneNumber || !bio || !skills) {
@@ -151,12 +157,12 @@ export const updateProfile = async (req, res) => {
       });
     }
 
-    // Convert skills to an array
-    const skillArray = skills.split(",").map(skill => skill.trim());
+    // Convert skills to an array if it's not already one
+    const skillArray = Array.isArray(skills) ? skills : skills.split(",").map(skill => skill.trim());
 
-    // Update user in the database
+    // Update the user's profile
     const updatedUser = await User.findByIdAndUpdate(
-      req.id, // Assuming `req.id` is set in a middleware
+      userId, // Use authenticated user ID
       {
         fullname,
         email,
@@ -164,7 +170,7 @@ export const updateProfile = async (req, res) => {
         profile: {
           bio,
           skills: skillArray,
-          ...(profilePhoto && { profilePhoto }), // Update only if a new photo is uploaded
+          ...(profilePhoto && { profilePhoto }), // Only add profilePhoto if it exists
         },
       },
       { new: true } // Return the updated document
@@ -190,5 +196,6 @@ export const updateProfile = async (req, res) => {
     });
   }
 };
+
 
 
