@@ -2,6 +2,8 @@ import express from 'express';
 import dotenv from 'dotenv';
 import connection from './db/connection.js';
 import userRoutes from './routes/userRoutes.js';
+import companyRoutes from './routes/companyRoutes.js';
+import applicationRoutes from './routes/applicationRoutes.js'; 
 
 // Load environment variables
 dotenv.config();
@@ -13,7 +15,8 @@ const PORT = process.env.PORT || 3000;
 
 //define routes
 app.use("/register",userRoutes);
-
+app.use("/company",companyRoutes);
+app.use("/application",applicationRoutes);
 
 connection().then(() => {
   app.listen(PORT, () => {
