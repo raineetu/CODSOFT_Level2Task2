@@ -1,6 +1,25 @@
-// import { useState } from "react";
+import { useState } from "react";
+import axios from "axios";
+
 
 function Login() {
+   const [logindata, setLoginData] = useState({
+    email: "",
+    password: "",
+    role: "",
+   });
+
+   const [message, setMessage] = useState("");
+    const handleChange = (e) =>{
+      const {name, value} = e.target;
+      setLoginData({
+        ...logindata,
+      });
+    };
+
+    const data = new logindata();
+    data.append("email", )
+
   return (
     <div className="relative flex flex-col items-center justify-center w-[80vw] max-w-[40vh] h-auto bg-white p-8 rounded-lg shadow-2xl border border-gray-200">
       {/* Title */}

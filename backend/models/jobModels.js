@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import {User} from "./userModels.js";
 
 const jobSchema = new mongoose.Schema({
     title: {
@@ -20,6 +21,10 @@ const jobSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
+    experience:{
+        type:Number,
+        required: true
+    },
     salary: {
         type: Number,
         required: false
@@ -32,7 +37,7 @@ const jobSchema = new mongoose.Schema({
     postedBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User', 
-        required: true
+        required: false
     },
     createdAt: {
         type: Date,

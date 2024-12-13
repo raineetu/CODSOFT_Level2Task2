@@ -4,11 +4,15 @@ import jwt from 'jsonwebtoken';
 
 export const signup = async (req, res) => {
   try {
-    const { fullname, email, phoneNumber, password, cpassword, role } = req.body;
-    const profilePhoto = req.file?.path; 
+    console.log('Request Body:', req.body);
+    console.log('File:', req.file);
+
+    const { fullname, email, phoneNumber, password, cpassword } = req.body;
+    const profilePhoto = req.file?.path;
 
     // Input validation
-    if (!fullname || !email || !phoneNumber || !password || !cpassword || !role) {
+    if (!fullname || !email || !phoneNumber || !password || !cpassword ) {
+      console.log('Validation failed: Missing fields');
       return res.status(400).json({
         message: "All fields are required",
         success: false,
@@ -16,6 +20,7 @@ export const signup = async (req, res) => {
     }
 
     if (password !== cpassword) {
+      console.log('Validation failed: Passwords do not match');
       return res.status(400).json({
         message: "Passwords do not match",
         success: false,
@@ -25,6 +30,7 @@ export const signup = async (req, res) => {
     // Check if email already exists
     const user = await User.findOne({ email });
     if (user) {
+      console.log('Validation failed: Email already exists');
       return res.status(400).json({
         message: "Email already exists",
         success: false,
@@ -33,6 +39,7 @@ export const signup = async (req, res) => {
 
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
+
     // Create a new user
     await User.create({
       fullname,
@@ -40,17 +47,18 @@ export const signup = async (req, res) => {
       phoneNumber,
       password: hashedPassword,
       cpassword: hashedPassword,
-      role,
       profile: {
         profilePhoto,
       },
     });
 
+    console.log('User registered successfully');
     res.status(201).json({
       message: "User registered successfully",
       success: true,
     });
   } catch (error) {
+    console.error('Error during signup:', error);
     res.status(500).json({
       message: "Something went wrong",
       success: false,
@@ -58,6 +66,7 @@ export const signup = async (req, res) => {
     });
   }
 };
+
 
 export const login = async (req, res) => {
   try {

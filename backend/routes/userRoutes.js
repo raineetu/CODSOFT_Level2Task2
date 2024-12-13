@@ -8,7 +8,7 @@ const router = express.Router();
 // Routes
 router.route("/signup").post(upload.single("profilePhoto"), signup);
 router.route("/login").post(login);
-router.route("/logout").post(logout); // Changed to POST for REST conventions
+router.route("/logout").post(logout); 
 router.route("/updateProfile").put(authenticate, upload.single("profilePhoto"), updateProfile);
 
 export default router;
